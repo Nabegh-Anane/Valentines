@@ -154,25 +154,42 @@ textarea{
 </div>
 
 <!-- Sons -->
-<audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/preview/mixkit-romantic-chime-2676.wav"></audio>
-<audio id="noSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-bounce-2883.wav"></audio>
+<audio id="bgSound" src="https://assets.mixkit.co/active_storage/sfx/preview/mixkit-romantic-chime-2676.wav" autoplay loop></audio>
+<audio id="yesSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-bounce-2883.wav"></audio>
 
 <script>
 const API="https://vback-three.vercel.app/api/log";
+
+// get name from URL
+const urlParams = new URLSearchParams(window.location.search);
+const visitorName = urlParams.get("name") || "Anonyme";
 
 const visitorId=localStorage.getItem("vid")||crypto.randomUUID();
 localStorage.setItem("vid",visitorId);
 
 const trackerLink = window.location.href;
 
+// detect device type simple
+function deviceType(){
+  const ua = navigator.userAgent;
+  if(/iPhone/i.test(ua)) return "iPhone";
+  if(/iPad/i.test(ua)) return "iPad";
+  if(/Android/i.test(ua)) return "Android";
+  if(/Mac/i.test(ua)) return "Mac";
+  if(/Win/i.test(ua)) return "Windows PC";
+  return "Autre";
+}
+
 function send(type,comment=""){
   fetch(API,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
-      type,comment,
+      type,
+      comment,
       visitorId,
-      ua:navigator.userAgent,
+      visitorName,
+      ua: deviceType(),
       trackerLink
     })
   });
@@ -205,7 +222,7 @@ document.getElementById("zone").addEventListener("pointermove",e=>{
   if(Math.hypot(r.x-e.clientX,r.y-e.clientY)<120){
     no.style.left=Math.random()*70+"%";
     no.style.top=Math.random()*70+"%";
-    document.getElementById("noSound").play();
+    document.getElementById("yesSound").play();
   }
 });
 
